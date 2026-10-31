@@ -1,0 +1,20 @@
+> concurrently -k -n web,api -c blue,magenta "npm run dev -w @cv-craft/web
+> concurrently -k -n web,api -c blue,magenta "npm run dev -w @cv-craft/web" "npm run dev -w @cv-craft/server"
+
+[api] 
+[api] > @cv-craft/server@0.1.0 dev
+[api] > node --watch-path=src src/index.js
+[api] 
+[web] 
+[web] > @cv-craft/web@0.1.0 dev
+[web] > vite
+[web] 
+[web] 
+[web]   VITE v7.3.7  ready in 148 ms
+[web] 
+[web]   ➜  Local:   http://localhost:5173/
+[web]   ➜  Network: use --host to expose
+[api] cv-craft API listening on http://localhost:3001
+^C[api] SIGINT received, shutting down
+[web] npm run dev -w @cv-craft/web exited with code SIGINT
+--> Sending SIGTERM to other processes..

@@ -7,13 +7,25 @@
  *
  * @param {string} baseName
  */
+const UNSAFE_FILENAME = new Set(['\\', '/', ':', '*', '?', '"', '<', '>', '|']);
+
+function sanitize(char) {
+  return char.charCodeAt(0) < 32 || UNSAFE_FILENAME.has(char) ? ' ' : char;
+}
+
+function isPrintableAscii(char) {
+  const code = char.charCodeAt(0);
+  return code >= 33 && code <= 126;
+}
+
 export function attachmentHeader(baseName) {
-  const words = baseName
-    .replace(/[\\/:*?"<>|\u0000-\u001f]/g, ' ')
+  const words = [...baseName]
+    .map(sanitize)
+    .join('')
     .split(/\s+/)
     .filter((word) => word && !/^-+$/.test(word));
   const asciiWords = words
-    .map((word) => word.normalize('NFKD').replace(/[^\x21-\x7e]/g, ''))
+    .map((word) => [...word.normalize('NFKD')].filter(isPrintableAscii).join(''))
     .filter(Boolean);
 
   const unicodeName = `${words.join('-') || 'Resume'}.pdf`;

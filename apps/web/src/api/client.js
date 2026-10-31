@@ -18,25 +18,30 @@ async function toApiError(response) {
 }
 
 /**
- * Asks the server to render the resume and returns the PDF and its filename.
- * @returns {Promise<{ blob: Blob, filename: string }>}
+ * @param {string} path
+ * @param {{ method?: string, body?: object }} [options]
  */
-export async function renderPdf(profile, settings) {
+export async function api(path, { method = 'GET', body } = {}) {
   let response;
   try {
-    response = await fetch('/api/pdf', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profile, settings }),
+    response = await fetch(path, {
+      method,
+      credentials: 'include',
+      headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
     });
   } catch {
     throw new ApiError(0, 'NETWORK_ERROR', 'Could not reach the server.');
   }
   if (!response.ok) throw await toApiError(response);
-  return {
-    blob: await response.blob(),
-    filename: filenameFrom(response.headers.get('Content-Disposition')) ?? 'Resume.pdf',
-  };
+  const type = response.headers.get('content-type') ?? '';
+  if (type.includes('application/pdf')) {
+    return {
+      blob: await response.blob(),
+      filename: filenameFrom(response.headers.get('Content-Disposition')) ?? 'Resume.pdf',
+    };
+  }
+  return response.json();
 }
 
 function filenameFrom(header) {

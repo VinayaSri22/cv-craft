@@ -1,14 +1,13 @@
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import * as actions from './actions.js';
-import { createEmptyState, createSampleState, restoreState } from './initialState.js';
-
-const STORAGE_KEY = 'cv-craft:editor';
+import { createEmptyState, createSampleState } from './initialState.js';
+import { scheduleSave } from './sync.js';
 
 /**
  * Wraps each action so components call `actions.addItem(sectionId)` and the
- * store passes the Immer draft as the first argument.
+ * store passes the Immer draft as the first argument. Every edit is marked
+ * dirty and autosaved.
  */
 function bindActions(set) {
   const bound = {};
@@ -17,36 +16,55 @@ function bindActions(set) {
       let result;
       set((state) => {
         result = fn(state, ...args);
+        state.dirty = true;
       });
+      scheduleSave();
       return result;
     };
   }
   return bound;
 }
 
-/**
- * Editor state is kept in localStorage until the API exists (milestone M2),
- * so a page refresh does not lose work.
- */
+function replaceDocument(set, next) {
+  set((state) => {
+    state.profile = next.profile;
+    state.resume.name = next.resume.name;
+    state.resume.settings = next.resume.settings;
+    state.dirty = true;
+  });
+  scheduleSave();
+}
+
 export const useEditorStore = create(
-  persist(
-    immer((set) => ({
-      ...createEmptyState(),
-      actions: {
-        ...bindActions(set),
-        loadSample: () => set(createSampleState()),
-        reset: () => set(createEmptyState()),
+  immer((set) => ({
+    ...createEmptyState(),
+    resume: { id: null, revision: 0, ...createEmptyState().resume },
+    authStatus: 'unknown',
+    user: null,
+    profileId: null,
+    profileRevision: 0,
+    dirty: false,
+    saveStatus: 'idle',
+    saveError: null,
+    actions: {
+      ...bindActions(set),
+      loadSample: () => replaceDocument(set, createSampleState()),
+      reset: () => replaceDocument(set, createEmptyState()),
+      /** Clears the open document without saving. Used when signing out. */
+      resetLocal: () => {
+        const empty = createEmptyState();
+        set((state) => {
+          state.profile = empty.profile;
+          state.profileId = null;
+          state.profileRevision = 0;
+          state.resume = { id: null, name: empty.resume.name, settings: empty.resume.settings, revision: 0 };
+          state.dirty = false;
+          state.saveStatus = 'idle';
+          state.saveError = null;
+        });
       },
-    })),
-    {
-      name: STORAGE_KEY,
-      version: 1,
-      storage: createJSONStorage(() => localStorage),
-      partialize: ({ profile, resume }) => ({ profile, resume }),
-      merge: (persisted, current) =>
-        persisted ? { ...current, ...restoreState(persisted) } : current,
     },
-  ),
+  })),
 );
 
 export const useActions = () => useEditorStore((state) => state.actions);

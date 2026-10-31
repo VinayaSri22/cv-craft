@@ -3,8 +3,12 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
-  { ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**'] },
+  { ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**', '**/.cache/**'] },
   js.configs.recommended,
+  {
+    files: ['**/*.cjs'],
+    languageOptions: { sourceType: 'commonjs', globals: globals.node },
+  },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {

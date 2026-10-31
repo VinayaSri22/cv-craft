@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./catalog": "./src/catalog.js"
   },
   "dependencies": {
     "@cv-craft/shared": "0.1.0",

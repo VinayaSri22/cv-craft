@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { renderPdf } from './api/client.js';
+import { api } from './api/client.js';
 import { useEditorStore } from './store/useEditorStore.js';
+import { saveNow } from './store/sync.js';
 
 function saveBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
@@ -26,12 +27,21 @@ export function DownloadPdfButton() {
   const [error, setError] = useState(null);
 
   const download = async () => {
-    const { profile, resume } = useEditorStore.getState();
     setBusy(true);
     setError(null);
     try {
-      const { blob, filename } = await renderPdf(profile, resume.settings);
-      saveBlob(blob, filename);
+      await saveNow();
+      const { resume, saveStatus, saveError } = useEditorStore.getState();
+      if (saveStatus === 'conflict') {
+        setError('This resume changed in another session. Reload before downloading.');
+        return;
+      }
+      if (saveStatus === 'error') {
+        setError(saveError || 'Could not save your latest changes.');
+        return;
+      }
+      const file = await api(`/api/resumes/${resume.id}/pdf`);
+      saveBlob(file.blob, file.filename);
     } catch (err) {
       setError(describe(err));
     } finally {
