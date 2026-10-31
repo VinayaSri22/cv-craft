@@ -18,13 +18,26 @@
   margin-bottom: var(--gap);
 }
 
+.tpl-classic .classic-header--side {
+  display: flex;
+  align-items: center;
+  gap: 6mm;
+  text-align: left;
+}
+
+.tpl-classic .classic-header--side .classic-header__main {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
 .tpl-classic .classic-photo {
   width: 28mm;
   height: 28mm;
   object-fit: cover;
   border-radius: 50%;
   display: block;
-  margin: 0 auto 8px;
+  flex: none;
 }
 
 .tpl-classic .classic-header__name {

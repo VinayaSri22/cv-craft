@@ -88,7 +88,7 @@ export function BasicsPanel() {
       {basics.links.map((link) => (
         <div key={link.id} className="link-row">
           <TextInput
-            label="Label"
+            label="Link text"
             value={link.label}
             placeholder="GitHub"
             onChange={(v) => updateLink(link.id, { label: v })}

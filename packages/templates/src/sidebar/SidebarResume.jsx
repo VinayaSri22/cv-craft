@@ -1,26 +1,16 @@
-import { displayUrl } from '@cv-craft/shared';
-import { Page, Photo, Section, renderSection } from '../kit/index.js';
+import { Page, Photo, Section, TextLink, contactEntries, renderSection } from '../kit/index.js';
 import { standardRenderers } from '../kit/standardSections.jsx';
 import css from './sidebar.css?inline';
 
 const RAIL_TYPES = new Set(['skills', 'education', 'certifications']);
 const renderers = standardRenderers('sidebar');
 
-function contactLines(basics) {
-  return [
-    basics.email,
-    basics.phone,
-    basics.location,
-    ...basics.links.filter((link) => link.url).map((link) => displayUrl(link.url)),
-  ].filter(Boolean);
-}
-
 /** @param {{ model: object, options: object }} props */
 export function SidebarResume({ model, options }) {
   const { basics, summary, sections } = model;
   const rail = sections.filter((section) => RAIL_TYPES.has(section.type));
   const main = sections.filter((section) => !RAIL_TYPES.has(section.type));
-  const contact = contactLines(basics);
+  const contact = contactEntries(basics);
 
   return (
     <Page
@@ -38,8 +28,10 @@ export function SidebarResume({ model, options }) {
           </header>
           {contact.length ? (
             <ul className="sidebar-contact">
-              {contact.map((line, index) => (
-                <li key={index}>{line}</li>
+              {contact.map((entry) => (
+                <li key={entry.key}>
+                  <TextLink href={entry.href}>{entry.text}</TextLink>
+                </li>
               ))}
             </ul>
           ) : null}

@@ -1,6 +1,7 @@
 import { displayUrl, formatDate, formatDateRange, groupByCategory } from '@cv-craft/shared';
 import { Entry } from './Entry.jsx';
 import { Item, Section } from './Section.jsx';
+import { TextLink } from './TextLink.jsx';
 
 const range = (item) => formatDateRange(item);
 
@@ -49,7 +50,7 @@ export function standardRenderers(prefix) {
             id={item.id}
             title={[item.name, item.role].filter(Boolean).join(' — ')}
             date={range(item)}
-            subtitle={displayUrl(item.url)}
+            subtitle={item.url ? <TextLink href={item.url}>{displayUrl(item.url)}</TextLink> : ''}
             description={item.description}
             tags={item.technologies}
             bullets={item.bullets}

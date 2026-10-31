@@ -28,7 +28,7 @@
   width: 32mm;
   height: 32mm;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: 0;
   display: block;
   margin: 0 auto 8px;
 }

@@ -68,6 +68,14 @@ describe.each(templates.map((t) => [t.id, t]))('template "%s"', (_id, template) 
     expect(html).not.toContain('data-item-id="exp_shopline"');
   });
 
+  it('turns profile links into hyperlinks that use the link text', () => {
+    const { html } = render(template, sampleProfile);
+    expect(html).toContain('href="https://github.com/ananyarao"');
+    expect(html).toContain('>GitHub</a>');
+    expect(html).toContain('href="mailto:ananya.rao@example.com"');
+    expect(html).toContain('href="https://github.com/ananyarao/ledgerlite"');
+  });
+
   it('renders long content and non-Latin names', () => {
     const { html } = render(template, longProfile);
     expect(html).toContain('data-item-id="exp_long_24"');
@@ -129,6 +137,16 @@ describe('photo', () => {
     const shown = render(template, profile, { options: { showPhoto: true } });
     expect(shown.html).toContain('src="data:image/jpeg;base64,abc"');
     expect(shown.html).toContain('class="classic-photo"');
+    expect(shown.html).toContain('classic-header--side');
+  });
+
+  it('leaves a javascript address as plain text', () => {
+    const template = getTemplate('classic');
+    const profile = structuredClone(sampleProfile);
+    profile.basics.links = [{ id: 'lnk_bad', label: 'Click me', url: 'javascript:alert(1)' }];
+    const { html } = render(template, profile);
+    expect(html).not.toContain('javascript:');
+    expect(html).toContain('Click me');
   });
 });
 

@@ -1,5 +1,5 @@
 import { displayUrl, formatDate, formatDateRange, groupByCategory } from '@cv-craft/shared';
-import { Entry, Item, Page, Photo, Section, renderSection } from '../kit/index.js';
+import { Entry, Item, Page, Photo, Section, TextLink, contactEntries, renderSection } from '../kit/index.js';
 import css from './classic.css?inline';
 
 const range = (item) => formatDateRange(item);
@@ -47,7 +47,7 @@ const renderers = {
           id={item.id}
           title={[item.name, item.role].filter(Boolean).join(' — ')}
           date={range(item)}
-          subtitle={displayUrl(item.url)}
+          subtitle={item.url ? <TextLink href={item.url}>{displayUrl(item.url)}</TextLink> : ''}
           description={item.description}
           tags={item.technologies}
           bullets={item.bullets}
@@ -108,12 +108,8 @@ const renderers = {
 /** @param {{ model: object, options: object }} props */
 export function ClassicResume({ model, options }) {
   const { basics, summary, sections } = model;
-  const contact = [
-    basics.email,
-    basics.phone,
-    basics.location,
-    ...basics.links.filter((link) => link.url).map((link) => displayUrl(link.url)),
-  ].filter(Boolean);
+  const contact = contactEntries(basics);
+  const photoBesideName = Boolean(options.showPhoto && basics.photo?.id);
 
   return (
     <Page
@@ -122,17 +118,21 @@ export function ClassicResume({ model, options }) {
       options={options}
       style={{ '--accent': options.accent }}
     >
-      <header className="classic-header cv-flow">
+      <header className={`classic-header cv-flow${photoBesideName ? ' classic-header--side' : ''}`}>
         <Photo photo={basics.photo} show={options.showPhoto} className="classic-photo" />
-        {basics.fullName ? <h1 className="classic-header__name">{basics.fullName}</h1> : null}
-        {basics.headline ? <p className="classic-header__headline">{basics.headline}</p> : null}
-        {contact.length ? (
-          <p className="classic-header__contact">
-            {contact.map((entry, i) => (
-              <span key={i}>{entry}</span>
-            ))}
-          </p>
-        ) : null}
+        <div className="classic-header__main">
+          {basics.fullName ? <h1 className="classic-header__name">{basics.fullName}</h1> : null}
+          {basics.headline ? <p className="classic-header__headline">{basics.headline}</p> : null}
+          {contact.length ? (
+            <p className="classic-header__contact">
+              {contact.map((entry) => (
+                <span key={entry.key}>
+                  <TextLink href={entry.href}>{entry.text}</TextLink>
+                </span>
+              ))}
+            </p>
+          ) : null}
+        </div>
       </header>
 
       {summary ? (

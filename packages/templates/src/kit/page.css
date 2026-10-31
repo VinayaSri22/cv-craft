@@ -21,6 +21,12 @@
   margin: 0;
 }
 
+.cv-page a {
+  color: var(--accent, inherit);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .cv-entry {
   break-inside: avoid;
 }
