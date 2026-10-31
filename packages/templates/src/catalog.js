@@ -1,11 +1,13 @@
 import classic from './classic/meta.js';
+import modern from './modern/meta.js';
+import sidebar from './sidebar/meta.js';
 
 /**
  * Template metadata only: ids, options, and default section order.
  * The API imports this directly. React components live in the registry and
  * are loaded through Vite, because Node cannot import JSX.
  */
-export const templateCatalog = [classic];
+export const templateCatalog = [classic, sidebar, modern];
 
 export const DEFAULT_TEMPLATE_ID = classic.id;
 

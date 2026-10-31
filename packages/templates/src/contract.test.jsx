@@ -104,6 +104,22 @@ describe.each(templates.map((t) => [t.id, t]))('template "%s"', (_id, template) 
   });
 });
 
+describe('sidebar', () => {
+  it('places a rail beside the main column', () => {
+    const template = getTemplate('sidebar');
+    const { html } = render(template, sampleProfile);
+    const railAt = html.indexOf('class="sidebar-rail"');
+    const mainAt = html.indexOf('class="sidebar-main"');
+    expect(html).toContain('class="sidebar-layout"');
+    expect(railAt).toBeGreaterThan(-1);
+    expect(mainAt).toBeGreaterThan(railAt);
+    const rail = html.slice(railAt, mainAt);
+    expect(rail).toContain('data-section-id="sec_skills"');
+    expect(rail).toContain('data-section-id="sec_education"');
+    expect(html.slice(mainAt)).toContain('data-section-id="sec_experience"');
+  });
+});
+
 describe('registry', () => {
   it('falls back to the default template for unknown ids', () => {
     expect(getTemplate('does-not-exist').id).toBe(templates[0].id);

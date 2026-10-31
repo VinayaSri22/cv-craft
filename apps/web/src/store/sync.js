@@ -28,14 +28,13 @@ async function flush() {
   const snapshot = useEditorStore.getState();
   if (!snapshot.user || !snapshot.dirty || snapshot.saveStatus === 'conflict' || !snapshot.resume.id) return;
 
+  const generation = snapshot.editGeneration;
   useEditorStore.setState({ saveStatus: 'saving', saveError: null });
   try {
     const profileSaved = await api('/api/profile', {
       method: 'PUT',
       body: { revision: snapshot.profileRevision, profile: snapshot.profile },
     });
-    applyProfile(snapshot.profile, profileSaved);
-
     const latest = useEditorStore.getState();
     const resumeSaved = await api(`/api/resumes/${latest.resume.id}`, {
       method: 'PUT',
@@ -45,16 +44,11 @@ async function flush() {
         settings: latest.resume.settings,
       },
     });
-    const resumeSnapshot = { name: latest.resume.name, settings: latest.resume.settings };
     useEditorStore.setState((state) => {
-      const resumeSame =
-        state.resume.name === resumeSnapshot.name && state.resume.settings === resumeSnapshot.settings;
+      state.profileRevision = profileSaved.revision;
       state.resume.revision = resumeSaved.revision;
-      if (resumeSame) {
-        state.resume.name = resumeSaved.name;
-        state.resume.settings = resumeSaved.settings;
-      }
-      if (resumeSame && state.profile === profileSaved.profile) {
+      // A newer keystroke bumps editGeneration. Only an unchanged document is clean.
+      if (state.editGeneration === generation) {
         state.dirty = false;
         state.saveStatus = 'saved';
       } else {
@@ -76,12 +70,4 @@ async function flush() {
       saveError: error instanceof Error ? error.message : 'Could not save.',
     });
   }
-}
-
-function applyProfile(sentProfile, saved) {
-  useEditorStore.setState((state) => {
-    state.profileRevision = saved.revision;
-    if (state.profile === sentProfile) state.profile = saved.profile;
-    else state.dirty = true;
-  });
 }

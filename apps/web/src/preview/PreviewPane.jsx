@@ -80,7 +80,13 @@ export function PreviewPane() {
             Start filling in your details, or load the sample profile to see how templates work.
           </p>
         ) : null}
-        <PagedPreview pageSize={options.pageSize} margin={DEFAULT_PAGE_MARGIN} zoom={zoom} layoutKey={layoutKey}>
+        <PagedPreview
+          pageSize={options.pageSize}
+          margin={DEFAULT_PAGE_MARGIN}
+          zoom={zoom}
+          layoutKey={layoutKey}
+          previewMode={template.previewMode}
+        >
           <template.Component model={model} options={options} />
         </PagedPreview>
       </div>

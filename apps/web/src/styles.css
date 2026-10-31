@@ -544,9 +544,13 @@ textarea {
     0 8px 24px rgb(0 0 0 / 0.08);
 }
 
-.preview-sheet .cv-flow {
+.preview-sheet--flow .cv-flow {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+}
+
+.preview-slice {
+  overflow: hidden;
 }
 
 .preview-sheet__label {

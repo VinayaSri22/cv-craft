@@ -1,0 +1,118 @@
+.tpl-modern {
+  --accent: #0f6e8c;
+  --gap: 12px;
+  --body-size: 10.5pt;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: var(--body-size);
+  line-height: 1.4;
+}
+
+.tpl-modern--compact {
+  --gap: 8px;
+  --body-size: 9.5pt;
+  line-height: 1.3;
+}
+
+.tpl-modern .modern-header {
+  padding-bottom: 8px;
+  border-bottom: 3px solid var(--accent);
+  margin-bottom: 4px;
+}
+
+.tpl-modern .modern-header__name {
+  font-size: 22pt;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.tpl-modern .modern-header__headline {
+  margin-top: 3px;
+  font-size: 11.5pt;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.tpl-modern .modern-header__contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 6px;
+  font-size: 9.5pt;
+  color: #444;
+}
+
+.tpl-modern .modern-header__contact span {
+  white-space: nowrap;
+}
+
+.tpl-modern .cv-section {
+  margin-top: var(--gap);
+}
+
+.tpl-modern .cv-section__title {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--accent);
+  border-left: 3px solid var(--accent);
+  padding-left: 8px;
+  margin-bottom: 6px;
+  break-after: avoid;
+}
+
+.tpl-modern .cv-entry + .cv-entry {
+  margin-top: calc(var(--gap) * 0.7);
+}
+
+.tpl-modern .cv-entry__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tpl-modern .cv-entry__title {
+  font-size: var(--body-size);
+  font-weight: 700;
+}
+
+.tpl-modern .cv-entry__date,
+.tpl-modern .cv-entry__location {
+  white-space: nowrap;
+  color: #555;
+}
+
+.tpl-modern .cv-entry__subtitle {
+  font-weight: 600;
+  color: #333;
+}
+
+.tpl-modern .cv-entry__description,
+.tpl-modern .cv-entry__tags {
+  margin-top: 2px;
+}
+
+.tpl-modern .cv-entry__tags {
+  color: #444;
+  font-size: 9.5pt;
+}
+
+.tpl-modern .cv-entry__bullets {
+  margin-top: 3px;
+  padding-left: 16px;
+}
+
+.tpl-modern .cv-entry__bullets li + li {
+  margin-top: 1px;
+}
+
+.tpl-modern .modern-skills__row + .modern-skills__row {
+  margin-top: 2px;
+}
+
+.tpl-modern .modern-skills__item {
+  display: inline;
+}
+
+.tpl-modern .modern-summary {
+  margin: 0;
+}

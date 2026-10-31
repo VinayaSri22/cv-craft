@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { DEFAULT_PAGE_MARGIN, PAGE_SIZES } from '@cv-craft/templates';
-import { paginateElement, parseMargin } from './paginate.js';
+import { paginateElement, parseMargin, sliceCount } from './paginate.js';
 
 function lengthToPx(length) {
   const probe = document.createElement('div');
@@ -18,7 +18,14 @@ function lengthToPx(length) {
  * page size and margins as the PDF, so a second page shows up here whenever
  * the download will have one.
  */
-export function PagedPreview({ pageSize = 'A4', margin = DEFAULT_PAGE_MARGIN, zoom = 1, layoutKey, children }) {
+export function PagedPreview({
+  pageSize = 'A4',
+  margin = DEFAULT_PAGE_MARGIN,
+  zoom = 1,
+  layoutKey,
+  previewMode = 'flow',
+  children,
+}) {
   const measureRef = useRef(null);
   const [frame, setFrame] = useState({
     sheets: /** @type {{ html: string, gap: number }[][]} */ ([]),
@@ -36,8 +43,17 @@ export function PagedPreview({ pageSize = 'A4', margin = DEFAULT_PAGE_MARGIN, zo
       /** @type {Record<string, string>} */
       const style = {};
       for (const name of root.style) style[name] = root.style.getPropertyValue(name);
+      const sheets =
+        previewMode === 'slice'
+          ? Array.from({ length: sliceCount(root.scrollHeight, contentHeight) }, (_, index) => ({
+              html: root.innerHTML,
+              offset: index * contentHeight,
+              viewHeight: contentHeight,
+            }))
+          : paginateElement(root, contentHeight);
       setFrame({
-        sheets: paginateElement(root, contentHeight),
+        mode: previewMode,
+        sheets,
         style,
         templateClass: root.className.replace(/\bcv-page\b/, '').trim(),
       });
@@ -51,9 +67,9 @@ export function PagedPreview({ pageSize = 'A4', margin = DEFAULT_PAGE_MARGIN, zo
     return () => {
       cancelled = true;
     };
-  }, [layoutKey, box.height, edges.top, edges.bottom]);
+  }, [layoutKey, previewMode, box.height, edges.top, edges.bottom]);
 
-  const { sheets, style, templateClass } = frame;
+  const { mode = previewMode, sheets, style, templateClass } = frame;
 
   return (
     <div className="paged">
@@ -66,17 +82,23 @@ export function PagedPreview({ pageSize = 'A4', margin = DEFAULT_PAGE_MARGIN, zo
       </div>
 
       <div className="preview-sheets" style={{ zoom }}>
-        {(sheets.length > 0 ? sheets : [[]]).map((page, index, all) => (
+        {(sheets.length > 0 ? sheets : mode === 'slice' ? [] : [[]]).map((page, index, all) => (
           <figure className="preview-sheet-wrap" key={index}>
             <div
-              className={`preview-sheet cv-page ${templateClass}`}
+              className={`preview-sheet cv-page ${mode === 'flow' ? 'preview-sheet--flow' : ''} ${templateClass}`}
               style={{ ...style, width: box.width, height: box.height, padding: margin }}
             >
-              {page.map((block, blockIndex) => (
-                <div key={blockIndex} className="preview-block" style={{ marginTop: block.gap }}>
-                  <div dangerouslySetInnerHTML={{ __html: block.html }} />
+              {mode === 'slice' ? (
+                <div className="preview-slice" style={{ height: page.viewHeight }}>
+                  <div style={{ marginTop: -page.offset }} dangerouslySetInnerHTML={{ __html: page.html }} />
                 </div>
-              ))}
+              ) : (
+                page.map((block, blockIndex) => (
+                  <div key={blockIndex} className="preview-block" style={{ marginTop: block.gap }}>
+                    <div dangerouslySetInnerHTML={{ __html: block.html }} />
+                  </div>
+                ))
+              )}
             </div>
             <figcaption className="preview-sheet__label">
               Page {index + 1} of {all.length}

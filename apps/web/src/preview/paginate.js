@@ -34,6 +34,12 @@ export function packBlocks(blocks, contentHeight) {
   return pages;
 }
 
+/** How many page windows fit a continuous layout of `contentPx` inside a box of `boxPx`. */
+export function sliceCount(contentPx, boxPx) {
+  if (boxPx <= 0) return 1;
+  return Math.max(1, Math.ceil((contentPx - 1) / boxPx));
+}
+
 /** CSS margin shorthand (1 to 4 values) to top/right/bottom/left. */
 export function parseMargin(margin) {
   const [top, right = top, bottom = top, left = right] = margin.trim().split(/\s+/);

@@ -1,4 +1,6 @@
 import { ClassicResume } from './classic/ClassicResume.jsx';
+import { ModernResume } from './modern/ModernResume.jsx';
+import { SidebarResume } from './sidebar/SidebarResume.jsx';
 import {
   DEFAULT_TEMPLATE_ID,
   defaultSectionOrder,
@@ -8,6 +10,8 @@ import {
 
 const components = {
   classic: ClassicResume,
+  sidebar: SidebarResume,
+  modern: ModernResume,
 };
 
 /**

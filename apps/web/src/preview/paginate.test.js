@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { packBlocks, parseMargin } from './paginate.js';
+import { packBlocks, parseMargin, sliceCount } from './paginate.js';
 
 const block = (height, gapFromPrev = 0, keepWithNext = false) => ({ height, gapFromPrev, keepWithNext });
 
@@ -26,6 +26,14 @@ describe('packBlocks', () => {
 
   it('returns one empty page when there is nothing to place', () => {
     expect(packBlocks([], 100)).toEqual([[]]);
+  });
+});
+
+describe('sliceCount', () => {
+  it('keeps a short layout on one page and splits a taller one', () => {
+    expect(sliceCount(200, 400)).toBe(1);
+    expect(sliceCount(401, 400)).toBe(1);
+    expect(sliceCount(402, 400)).toBe(2);
   });
 });
 

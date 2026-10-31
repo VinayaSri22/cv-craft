@@ -17,6 +17,7 @@ function bindActions(set) {
       set((state) => {
         result = fn(state, ...args);
         state.dirty = true;
+        state.editGeneration += 1;
       });
       scheduleSave();
       return result;
@@ -31,6 +32,7 @@ function replaceDocument(set, next) {
     state.resume.name = next.resume.name;
     state.resume.settings = next.resume.settings;
     state.dirty = true;
+    state.editGeneration += 1;
   });
   scheduleSave();
 }
@@ -44,6 +46,7 @@ export const useEditorStore = create(
     profileId: null,
     profileRevision: 0,
     dirty: false,
+    editGeneration: 0,
     saveStatus: 'idle',
     saveError: null,
     actions: {
