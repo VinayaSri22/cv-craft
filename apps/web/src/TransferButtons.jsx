@@ -60,14 +60,14 @@ export function TransferButtons() {
 
   return (
     <>
-      <button type="button" className="button button--ghost" disabled={busy} onClick={onExport}>
-        Export JSON
+      <button type="button" className="quiet" disabled={busy} onClick={onExport}>
+        Export
       </button>
-      <button type="button" className="button button--ghost" disabled={busy} onClick={() => inputRef.current?.click()}>
-        Import JSON
+      <button type="button" className="quiet" disabled={busy} onClick={() => inputRef.current?.click()}>
+        Import
       </button>
       <input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={onPick} />
-      {error ? <span className="topbar__error">{error}</span> : null}
+      {error ? <span className="designbar__error">{error}</span> : null}
     </>
   );
 }

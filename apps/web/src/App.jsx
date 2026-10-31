@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { AuthScreen } from './auth/AuthScreen.jsx';
 import { PasswordForm } from './auth/PasswordForm.jsx';
-import { useConfirm } from './confirm/ConfirmDialog.jsx';
+import { DesignBar } from './DesignBar.jsx';
 import { DownloadPdfButton } from './DownloadPdfButton.jsx';
-import { TransferButtons } from './TransferButtons.jsx';
 import { BasicsPanel } from './editor/BasicsPanel.jsx';
 import { SectionsEditor } from './editor/SectionsEditor.jsx';
 import { PreviewPane } from './preview/PreviewPane.jsx';
-import { useActions, useEditorStore } from './store/useEditorStore.js';
+import { useEditorStore } from './store/useEditorStore.js';
 import { bootstrap, logout, reloadDocument } from './store/session.js';
 import { saveNow } from './store/sync.js';
 
@@ -44,65 +43,42 @@ export function App() {
 }
 
 function Editor() {
-  const { loadSample, reset } = useActions();
-  const confirm = useConfirm();
   const user = useEditorStore((state) => state.user);
   const saveStatus = useEditorStore((state) => state.saveStatus);
   const saveError = useEditorStore((state) => state.saveError);
   const [passwordOpen, setPasswordOpen] = useState(false);
-
-  const confirmThen = (options, action) => async () => {
-    if (await confirm(options)) action();
-  };
+  const [zoom, setZoom] = useState(0.75);
 
   return (
     <div className="app">
       <header className="topbar">
         <div className="topbar__brand-group">
-          <h1 className="topbar__brand">cv-craft</h1>
+          <h1 className="topbar__brand">
+            <span className="brand__mark" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2.5 1.5h6L11.5 4.5V12.5h-9v-11Z" stroke="#fff" strokeWidth="1.3" />
+                <path d="M8.2 1.8V4.6h2.8" stroke="#fff" strokeWidth="1.3" />
+              </svg>
+            </span>
+            cv-craft
+          </h1>
           <SaveStatus status={saveStatus} error={saveError} onRetry={saveNow} />
         </div>
-        <div className="topbar__actions">
-          <span className="topbar__user">{user.email}</span>
-          <button type="button" className="button button--ghost" onClick={() => setPasswordOpen(true)}>
+        <div className="topbar__account">
+          <span className="topbar__user" title={user.email}>
+            {user.email}
+          </span>
+          <button type="button" className="quiet" onClick={() => setPasswordOpen(true)}>
             Password
           </button>
-          <button type="button" className="button button--ghost" onClick={() => logout()}>
+          <button type="button" className="quiet" onClick={() => logout()}>
             Log out
           </button>
-          <button
-            type="button"
-            className="button button--ghost"
-            onClick={confirmThen(
-              {
-                title: 'Load sample profile',
-                message: 'This replaces your current details with the sample profile.',
-                confirmLabel: 'Load sample',
-              },
-              loadSample,
-            )}
-          >
-            Load sample
-          </button>
-          <button
-            type="button"
-            className="button button--ghost"
-            onClick={confirmThen(
-              {
-                title: 'Start over',
-                message: 'This permanently clears all of your details.',
-                confirmLabel: 'Clear data',
-                danger: true,
-              },
-              reset,
-            )}
-          >
-            Start over
-          </button>
-          <TransferButtons />
+          <span className="topbar__rule" aria-hidden="true" />
           <DownloadPdfButton />
         </div>
       </header>
+      <DesignBar zoom={zoom} onZoom={setZoom} />
 
       {saveStatus === 'conflict' ? (
         <div className="banner" role="alert">
@@ -126,19 +102,34 @@ function Editor() {
           <BasicsPanel />
           <SectionsEditor />
         </aside>
-        <PreviewPane />
+        <PreviewPane zoom={zoom} />
       </main>
     </div>
   );
 }
 
 function SaveStatus({ status, error, onRetry }) {
-  if (status === 'saving') return <span className="save-status">Saving…</span>;
-  if (status === 'saved') return <span className="save-status">Saved</span>;
+  if (status === 'saving') {
+    return (
+      <span className="save save--saving">
+        <span className="save__dot" />
+        Saving
+      </span>
+    );
+  }
+  if (status === 'saved') {
+    return (
+      <span className="save save--saved">
+        <span className="save__dot" />
+        Saved
+      </span>
+    );
+  }
   if (status === 'error') {
     return (
-      <span className="save-status save-status--error">
-        {error || 'Could not save.'}{' '}
+      <span className="save save--error">
+        <span className="save__dot" />
+        {error || 'Could not save'}
         <button type="button" className="link-button" onClick={onRetry}>
           Retry
         </button>
