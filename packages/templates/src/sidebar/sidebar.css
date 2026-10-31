@@ -24,6 +24,15 @@
   padding: 8px 10px 10px;
 }
 
+.tpl-sidebar .sidebar-photo {
+  width: 32mm;
+  height: 32mm;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 8px;
+}
+
 .tpl-sidebar .sidebar-identity__name {
   font-size: 16pt;
   line-height: 1.15;

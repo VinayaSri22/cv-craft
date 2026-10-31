@@ -48,7 +48,7 @@ export function resumeRoutes(db, { renderPdf }) {
     const profile = getProfileRecord(db, req.user.id);
     const resume = getResumeRecord(db, req.user.id, req.params.id);
     if (!profile || !resume) throw new HttpError(404, 'NOT_FOUND', 'Resume not found.');
-    const { pdf, title } = await renderPdf(profile.profile, resume.settings);
+    const { pdf, title } = await renderPdf(profile.profile, resume.settings, req.user.id);
     sendPdf(res, pdf, title);
   });
 

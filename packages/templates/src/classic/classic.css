@@ -18,6 +18,15 @@
   margin-bottom: var(--gap);
 }
 
+.tpl-classic .classic-photo {
+  width: 28mm;
+  height: 28mm;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 8px;
+}
+
 .tpl-classic .classic-header__name {
   font-size: 22pt;
   font-weight: 700;

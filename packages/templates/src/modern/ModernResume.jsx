@@ -1,5 +1,5 @@
 import { displayUrl } from '@cv-craft/shared';
-import { Page, Section, renderSection } from '../kit/index.js';
+import { Page, Photo, Section, renderSection } from '../kit/index.js';
 import { standardRenderers } from '../kit/standardSections.jsx';
 import css from './modern.css?inline';
 
@@ -23,15 +23,18 @@ export function ModernResume({ model, options }) {
       style={{ '--accent': options.accent }}
     >
       <header className="modern-header cv-flow">
-        {basics.fullName ? <h1 className="modern-header__name">{basics.fullName}</h1> : null}
-        {basics.headline ? <p className="modern-header__headline">{basics.headline}</p> : null}
-        {contact.length ? (
-          <p className="modern-header__contact">
-            {contact.map((entry, index) => (
-              <span key={index}>{entry}</span>
-            ))}
-          </p>
-        ) : null}
+        <Photo photo={basics.photo} show={options.showPhoto} className="modern-photo" />
+        <div className="modern-header__text">
+          {basics.fullName ? <h1 className="modern-header__name">{basics.fullName}</h1> : null}
+          {basics.headline ? <p className="modern-header__headline">{basics.headline}</p> : null}
+          {contact.length ? (
+            <p className="modern-header__contact">
+              {contact.map((entry, index) => (
+                <span key={index}>{entry}</span>
+              ))}
+            </p>
+          ) : null}
+        </div>
       </header>
 
       {summary ? (

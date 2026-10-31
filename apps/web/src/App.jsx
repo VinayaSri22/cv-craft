@@ -3,6 +3,7 @@ import { AuthScreen } from './auth/AuthScreen.jsx';
 import { PasswordForm } from './auth/PasswordForm.jsx';
 import { useConfirm } from './confirm/ConfirmDialog.jsx';
 import { DownloadPdfButton } from './DownloadPdfButton.jsx';
+import { TransferButtons } from './TransferButtons.jsx';
 import { BasicsPanel } from './editor/BasicsPanel.jsx';
 import { SectionsEditor } from './editor/SectionsEditor.jsx';
 import { PreviewPane } from './preview/PreviewPane.jsx';
@@ -98,6 +99,7 @@ function Editor() {
           >
             Start over
           </button>
+          <TransferButtons />
           <DownloadPdfButton />
         </div>
       </header>

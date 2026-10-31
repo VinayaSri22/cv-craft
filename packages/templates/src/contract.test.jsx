@@ -120,6 +120,18 @@ describe('sidebar', () => {
   });
 });
 
+describe('photo', () => {
+  it('stays hidden until the resume turns it on', () => {
+    const template = getTemplate('classic');
+    const profile = structuredClone(sampleProfile);
+    profile.basics.photo = { id: 'ph_abc', width: 600, height: 600, src: 'data:image/jpeg;base64,abc' };
+    expect(render(template, profile).html).not.toContain('<img');
+    const shown = render(template, profile, { options: { showPhoto: true } });
+    expect(shown.html).toContain('src="data:image/jpeg;base64,abc"');
+    expect(shown.html).toContain('class="classic-photo"');
+  });
+});
+
 describe('registry', () => {
   it('falls back to the default template for unknown ids', () => {
     expect(getTemplate('does-not-exist').id).toBe(templates[0].id);

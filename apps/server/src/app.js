@@ -6,6 +6,7 @@ import { HttpError, errorHandler } from './http/errors.js';
 import { DEFAULT_ORIGINS, requireAllowedOrigin } from './http/origin.js';
 import { requireJson } from './http/requireJson.js';
 import { authRoutes } from './routes/auth.js';
+import { defaultUploadDir, attachPhotoSrc } from './photos.js';
 import { profileRoutes } from './routes/profile.js';
 import { resumeRoutes, sendPdf } from './routes/resumes.js';
 
@@ -22,6 +23,7 @@ function validationError(issues) {
  *   allowedOrigins?: string[],
  *   secureCookies?: boolean,
  *   rateLimit?: (key: string) => boolean,
+ *   uploadDir?: string,
  * }} deps
  */
 export function createApp({
@@ -32,14 +34,16 @@ export function createApp({
   allowedOrigins = DEFAULT_ORIGINS,
   secureCookies = false,
   rateLimit,
+  uploadDir = defaultUploadDir(),
 }) {
   const app = express();
   app.disable('x-powered-by');
   app.use(helmet());
 
   const auth = createAuth(db, { secureCookies });
-  const renderPdf = async (profile, settings) => {
-    const rendered = await renderer.renderResume(profile, settings);
+  const renderPdf = async (profile, settings, userId) => {
+    const printable = attachPhotoSrc(db, userId, profile, uploadDir);
+    const rendered = await renderer.renderResume(printable, settings);
     return { ...rendered, pdf: await printer.print(rendered.html) };
   };
 
@@ -53,7 +57,7 @@ export function createApp({
 
   api.use('/auth', authRoutes({ db, auth, rateLimit }));
   api.use(auth.requireAuth);
-  api.use(profileRoutes(db));
+  api.use(profileRoutes(db, { uploadDir }));
   api.use(resumeRoutes(db, { renderPdf }));
 
   api.post('/pdf', requireJson, async (req, res) => {
@@ -61,7 +65,7 @@ export function createApp({
     if (!profile.ok) throw validationError(profile.issues.map(prefix('profile')));
     const settings = parseResumeSettings(req.body?.settings);
     if (!settings.ok) throw validationError(settings.issues.map(prefix('settings')));
-    const { pdf, title } = await renderPdf(profile.data, settings.data);
+    const { pdf, title } = await renderPdf(profile.data, settings.data, req.user.id);
     sendPdf(res, pdf, title);
   });
 

@@ -15,6 +15,14 @@ function OptionControl({ control, value, onChange }) {
       </label>
     );
   }
+  if (control.kind === 'checkbox') {
+    return (
+      <label className="toolbar__field toolbar__field--check">
+        <span>{control.label}</span>
+        <input type="checkbox" checked={Boolean(value)} onChange={(e) => onChange(e.target.checked)} />
+      </label>
+    );
+  }
   return (
     <label className="toolbar__field">
       <span>{control.label}</span>

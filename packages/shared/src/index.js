@@ -20,4 +20,5 @@ export { compose, effectiveSectionOrder } from './compose.js';
 export { displayUrl, formatDate, formatDateRange, groupByCategory } from './format.js';
 export { migrateProfile } from './migrations.js';
 export { parseProfile, parseResumeSettings } from './validate.js';
+export { EXPORT_FORMAT, buildExport, parseImport } from './transfer.js';
 export { sampleProfile } from './fixtures.js';

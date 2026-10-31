@@ -1,5 +1,5 @@
 import { displayUrl } from '@cv-craft/shared';
-import { Page, Section, renderSection } from '../kit/index.js';
+import { Page, Photo, Section, renderSection } from '../kit/index.js';
 import { standardRenderers } from '../kit/standardSections.jsx';
 import css from './sidebar.css?inline';
 
@@ -32,6 +32,7 @@ export function SidebarResume({ model, options }) {
       <div className="sidebar-layout">
         <aside className="sidebar-rail">
           <header className="sidebar-identity">
+            <Photo photo={basics.photo} show={options.showPhoto} className="sidebar-photo" />
             {basics.fullName ? <h1 className="sidebar-identity__name">{basics.fullName}</h1> : null}
             {basics.headline ? <p className="sidebar-identity__headline">{basics.headline}</p> : null}
           </header>

@@ -1,7 +1,9 @@
 import {
+  buildExport,
   createEmptyProfile,
   createId,
   createResumeSettings,
+  parseImport,
   parseProfile,
   parseResumeSettings,
 } from '@cv-craft/shared';
@@ -192,6 +194,57 @@ export function saveProfile(db, userId, { revision, profile }) {
       { path: 'revision', message: `Current revision is ${current?.revision ?? 'unknown'}.` },
     ]);
   }
+  return getProfileRecord(db, userId);
+}
+
+export function exportDocument(db, userId) {
+  const record = getProfileRecord(db, userId);
+  if (!record) throw new HttpError(404, 'NOT_FOUND', 'Profile not found.');
+  const resumes = db
+    .prepare('SELECT name, settings FROM resumes WHERE user_id = ? ORDER BY created_at ASC')
+    .all(userId)
+    .map((row) => {
+      const parsed = parseResumeSettings(JSON.parse(row.settings));
+      if (!parsed.ok) throw new Error('Stored resume failed validation.');
+      return { name: row.name, settings: parsed.data };
+    });
+  if (resumes.length === 0) {
+    resumes.push({ name: 'My resume', settings: initialSettings(record.profile) });
+  }
+  return buildExport({ profile: record.profile, resumes });
+}
+
+/** Replaces the account's profile and every resume. The photo is not part of the file. */
+export function importDocument(db, userId, raw) {
+  const parsed = parseImport(raw);
+  if (!parsed.ok) {
+    throw new HttpError(422, 'VALIDATION_FAILED', 'The file could not be imported.', parsed.issues);
+  }
+  const current = getProfileRecord(db, userId);
+  if (!current) throw new HttpError(404, 'NOT_FOUND', 'Profile not found.');
+
+  const now = Date.now();
+  withTransaction(db, () => {
+    const updated = db
+      .prepare(
+        `UPDATE profiles
+         SET data = ?, schema_version = ?, revision = revision + 1, updated_at = ?
+         WHERE user_id = ?`,
+      )
+      .run(JSON.stringify(parsed.data.profile), parsed.data.profile.schemaVersion, new Date(now).toISOString(), userId);
+    if (updated.changes !== 1) throw new HttpError(404, 'NOT_FOUND', 'Profile not found.');
+    db.prepare('DELETE FROM resumes WHERE user_id = ?').run(userId);
+    parsed.data.resumes.forEach((resume, index) => {
+      const stamp = new Date(now + (parsed.data.resumes.length - index) * 1000).toISOString();
+      insertResume(db, {
+        userId,
+        profileId: current.id,
+        name: resume.name,
+        settings: resume.settings,
+        now: stamp,
+      });
+    });
+  });
   return getProfileRecord(db, userId);
 }
 

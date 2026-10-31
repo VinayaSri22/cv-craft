@@ -10,8 +10,10 @@ export function standardOptions(accentDefault) {
         .default(accentDefault),
       density: z.enum(['comfortable', 'compact']).default('comfortable'),
       pageSize: z.enum(['A4', 'Letter']).default('A4'),
+      showPhoto: z.boolean().default(false),
     }),
     optionControls: [
+      { key: 'showPhoto', label: 'Photo', kind: 'checkbox' },
       { key: 'accent', label: 'Accent color', kind: 'color' },
       {
         key: 'density',

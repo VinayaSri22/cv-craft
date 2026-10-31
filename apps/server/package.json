@@ -11,8 +11,10 @@
   "dependencies": {
     "@cv-craft/shared": "0.1.0",
     "@cv-craft/templates": "0.1.0",
+    "busboy": "^1.6.0",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
+    "sharp": "^0.34.4",
     "puppeteer": "^24.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

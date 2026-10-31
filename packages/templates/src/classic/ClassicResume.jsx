@@ -1,5 +1,5 @@
 import { displayUrl, formatDate, formatDateRange, groupByCategory } from '@cv-craft/shared';
-import { Entry, Item, Page, Section, renderSection } from '../kit/index.js';
+import { Entry, Item, Page, Photo, Section, renderSection } from '../kit/index.js';
 import css from './classic.css?inline';
 
 const range = (item) => formatDateRange(item);
@@ -123,6 +123,7 @@ export function ClassicResume({ model, options }) {
       style={{ '--accent': options.accent }}
     >
       <header className="classic-header cv-flow">
+        <Photo photo={basics.photo} show={options.showPhoto} className="classic-photo" />
         {basics.fullName ? <h1 className="classic-header__name">{basics.fullName}</h1> : null}
         {basics.headline ? <p className="classic-header__headline">{basics.headline}</p> : null}
         {contact.length ? (

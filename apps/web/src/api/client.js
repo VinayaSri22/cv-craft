@@ -44,6 +44,18 @@ export async function api(path, { method = 'GET', body } = {}) {
   return response.json();
 }
 
+/** Multipart upload. The browser sets the multipart boundary. */
+export async function apiForm(path, { method = 'POST', body } = {}) {
+  let response;
+  try {
+    response = await fetch(path, { method, credentials: 'include', body });
+  } catch {
+    throw new ApiError(0, 'NETWORK_ERROR', 'Could not reach the server.');
+  }
+  if (!response.ok) throw await toApiError(response);
+  return response.json();
+}
+
 function filenameFrom(header) {
   if (!header) return null;
   const utf8 = /filename\*=UTF-8''([^;]+)/i.exec(header);

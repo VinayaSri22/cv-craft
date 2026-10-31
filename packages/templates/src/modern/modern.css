@@ -14,9 +14,24 @@
 }
 
 .tpl-modern .modern-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   padding-bottom: 8px;
   border-bottom: 3px solid var(--accent);
   margin-bottom: 4px;
+}
+
+.tpl-modern .modern-photo {
+  width: 22mm;
+  height: 22mm;
+  object-fit: cover;
+  border-radius: 50%;
+  flex: none;
+}
+
+.tpl-modern .modern-header__text {
+  min-width: 0;
 }
 
 .tpl-modern .modern-header__name {

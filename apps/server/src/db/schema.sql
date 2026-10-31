@@ -36,6 +36,13 @@ CREATE TABLE IF NOT EXISTS resumes (
   updated_at   TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS photos (
+  id          TEXT PRIMARY KEY,
+  user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at  TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_resumes_user ON resumes(user_id);
 CREATE INDEX IF NOT EXISTS idx_resumes_profile ON resumes(profile_id);
+CREATE INDEX IF NOT EXISTS idx_photos_user ON photos(user_id);
