@@ -1,0 +1,13 @@
+{
+  "name": "@cv-craft/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "dependencies": {
+    "nanoid": "^5.1.5",
+    "zod": "^4.6.7"
+  }
+}
