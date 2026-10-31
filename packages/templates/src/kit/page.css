@@ -1,0 +1,39 @@
+.cv-page {
+  box-sizing: border-box;
+  padding: var(--cv-page-margin);
+  background: #fff;
+  color: #1a1a1a;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.cv-page *,
+.cv-page *::before,
+.cv-page *::after {
+  box-sizing: border-box;
+}
+
+.cv-page p,
+.cv-page ul,
+.cv-page h1,
+.cv-page h2,
+.cv-page h3 {
+  margin: 0;
+}
+
+.cv-entry {
+  break-inside: avoid;
+}
+
+.cv-entry ul {
+  break-inside: auto;
+}
+
+@media print {
+  .cv-page {
+    width: auto !important;
+    min-height: 0 !important;
+    padding: 0;
+    box-shadow: none;
+  }
+}
